@@ -1,0 +1,92 @@
+﻿<%@ Master Language="C#" MasterPageFile="~/HustleBuddyAuth.Master" AutoEventWireup="true" CodeBehind="HustleBuddyMain.master.cs" Inherits="HustleBuddy.HustleBuddyMain" %>
+
+<asp:Content ID="Content1" ContentPlaceHolderID="Content" runat="server">
+
+    <div class="row flex-nowrap">
+        <div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0 ">
+            <div id="sidebar" runat="server" class=" shadow p-3 mb-5 rounded list-group list-group-flush d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 min-vh-100 fixed-top" style="margin-top:68px; width:inherit;">
+                <a class="hb-listitem p-3" href="/Pages/Dashboard/Dashboard.aspx" id="nav_dash" runat="server">
+                    <span style="padding-right:5px;"><i class="fas fa-home"></i></span>
+                    Dashboard
+                </a>
+                <a class="hb-listitem p-3" href="#nav_prod" data-bs-toggle="collapse"">
+                    <span style=" padding-right:5px;"><i class="fas fa-th-large"></i></span>
+                        Products
+                </a>
+                <div class="collapse nav flex-column ms-1 mt-3" id="nav_prod" data-bs-parent="#sidebar" style="border-bottom:1.5px solid rgb(224,224,224); width:190px;">
+                    <ul class="btn-toggle-nav fw-normal pb-1 small list-unstyled">
+                        <li><a href="/Pages/Product/Product.aspx" class="link-dark dropdown-item">View Products</a></li>
+                    </ul>
+                </div>
+                        
+                <a class="hb-listitem p-3" data-bs-toggle="collapse" href="#nav_sale">
+                    <span style=" padding-right:5px;"><i class="far fa-clock"></i></span>
+                        Sales
+                </a>
+                <div class="collapse nav flex-column ms-1 mt-3" id="nav_sale" data-bs-parent="#sidebar" style="border-bottom:1.5px solid rgb(224,224,224); width:190px;">
+                    <ul class="btn-toggle-nav fw-normal pb-1 small list-unstyled">
+                        <li><a href="/Pages/Sale/Sale.aspx" class="link-dark dropdown-item">View All</a></li>
+                        <li><a href="/Pages/Sale/Sale.aspx?date=daily" class="link-dark dropdown-item">Today</a></li>
+                        <li><a href="/Pages/Sale/Sale.aspx?date=weekly" class="link-dark dropdown-item">Weekly</a></li>
+                        <li><a href="/Pages/Sale/Sale.aspx?date=monthly" class="link-dark dropdown-item">Monthly</a></li>
+                    </ul>
+                </div>
+                <a class="hb-listitem p-3" data-bs-toggle="collapse" href="#nav_stock">
+                    <span style=" padding-right:5px;"><i class="fas fa-shopping-basket"></i></span>
+                    Daily Stock
+                </a>
+                <div class="collapse nav flex-column ms-1 mt-3" id="nav_stock" data-bs-parent="#sidebar" style="border-bottom:1.5px solid rgb(224,224,224); width:190px;">
+                    <ul class="btn-toggle-nav fw-normal pb-1 small list-unstyled">
+                        <li><a href="/Pages/Stock/Stock.aspx" class="link-dark dropdown-item">Overview</a></li>
+                        <li><a href="#" class="link-dark dropdown-item">Weekly</a></li>
+                        <li><a href="#" class="link-dark dropdown-item">Monthly</a></li>
+                        <li><a href="#" class="link-dark dropdown-item">Annually</a></li>
+                    </ul>
+                </div>
+                <a class="hb-listitem p-3" data-bs-toggle="collapse" href="#nav_order">
+                    <span style=" padding-right:5px;"><i class="fas fa-cart-arrow-down"></i></span>
+                    Orders
+                </a>    
+                <div class="collapse nav flex-column ms-1 mt-3" id="nav_order" data-bs-parent="#sidebar" style="border-bottom:1.5px solid rgb(224,224,224); width:190px;">
+                    <ul class="btn-toggle-nav fw-normal pb-1 small list-unstyled">
+                        <li><a href="/Pages/Order/Order.aspx" class="link-dark dropdown-item">All Orders</a></li>
+                        <li><a href="/Pages/Order/Order.aspx?orderStatus=pending" class="link-dark dropdown-item">Pending</a></li>
+                        <li><a href="/Pages/Order/Order.aspx?orderStatus=completed" class="link-dark dropdown-item">Completed</a></li>
+                        <li><a href="/Pages/Order/Order.aspx?orderStatus=cancelled" class="link-dark dropdown-item">Returned</a></li>
+                    </ul>
+                </div>
+                <a class="hb-listitem p-3"data-bs-toggle="collapse" href="#nav_finance">
+                    <span style=" padding-right:5px;"><i class="fas fa-coins"></i></span>
+                    Finances
+                </a>
+                <div class="collapse nav flex-column ms-1 mt-3" id="nav_finance" data-bs-parent="#sidebar" style="border-bottom:1.5px solid rgb(224,224,224); width:190px;">
+                    <ul class="btn-toggle-nav fw-normal pb-1 small list-unstyled">
+                        <li><a href="/Pages/Finance/Finance.aspx" class="link-dark dropdown-item">Overview</a></li>
+                        <li><a href="#" class="link-dark dropdown-item">Weekly</a></li>
+                        <li><a href="#" class="link-dark dropdown-item">Monthly</a></li>
+                        <li><a href="#" class="link-dark dropdown-item">Annually</a></li>
+                    </ul>
+                </div>
+                <a class="hb-listitem p-3" data-bs-toggle="collapse" href="#nav_stat">
+                    <span style=" padding-right:5px;"><i class="fas fa-chart-line"></i></span>
+                    Statistics
+                </a>
+                <div class="collapse nav flex-column mx-2 mt-3" id="nav_stat" data-bs-parent="#sidebar" style="border-bottom:1.5px solid rgb(224,224,224); width:190px;">
+                    <ul class="btn-toggle-nav fw-normal pb-1 small list-unstyled">
+                        <li><a href="/Pages/Statistic/Statistic.aspx" class="link-dark dropdown-item">Overview</a></li>
+                        <li><a href="#" class="link-dark dropdown-item">Weekly</a></li>
+                        <li><a href="#" class="link-dark dropdown-item">Monthly</a></li>
+                        <li><a href="#" class="link-dark dropdown-item">Annually</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+            
+        <div class="col" style="margin-top:60px">
+            <asp:ContentPlaceHolder ID="MainContent" runat="server">
+                <!-- Content Here -->
+            </asp:ContentPlaceHolder>
+        </div>
+    </div>
+
+</asp:Content>
