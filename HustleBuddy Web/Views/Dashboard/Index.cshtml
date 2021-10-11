@@ -1,0 +1,170 @@
+﻿@model HustleBuddy_Web.ViewModels.DashboardViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h3 class="mb-2">Dashboard</h3>
+
+<div class="row">
+    <div class="col-4">
+        <div class="card" style="border: 1px solid mediumpurple;">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-6">
+                        <i class="fas fa-file-invoice fa-4x text-info"></i>
+                    </div>
+                    <div class="col-6" style="text-align: right">
+                        @if (Model != null)
+                        {
+                            <h5>@Model.orders</h5>
+                        }
+                        else
+                        {
+                            <h5>0</h5>
+                        }
+                        <h6 class="text-muted">Pending Orders</h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-4">
+        <div class="card" style="border: 1px solid mediumpurple;">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-6">
+                        <i class="fas fa-cash-register fa-4x text-warning"></i>
+                    </div>
+                    <div class="col-6" style="text-align: right">
+                        @if (Model != null)
+                        {
+                            <h5>@Model.sales</h5>
+                        }
+                        else
+                        {
+                            <h5>0</h5>
+                        }
+                        <h6 class="text-muted">Cash Sales</h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-4">
+        <div class="card" style="border: 1px solid mediumpurple;">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-6">
+                        <i class="fas fa-balance-scale-left fa-4x text-danger"></i>
+                    </div>
+                    <div class="col-6" style="text-align: right">
+                        @if (Model != null)
+                        {
+                            <h5>@Model.credit</h5>
+                        }
+                        else
+                        {
+                            <h5>0</h5>
+                        }
+                        <h6 class="text-muted">Credit Sales</h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row my-2">
+    <div class="col-4 btn-group">
+        <a id="all" href="?period=all" class="btn btn-light w-25">All</a>
+        <a id="daily" href="?period=daily" class="btn btn-light w-25">Daily</a>
+        <a id="weekly" href="?period=weekly" class="btn btn-light w-25">Weekly</a>
+        <a id="monthly" href="?period=monthly" class="btn btn-light w-25">Monthly</a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-6">
+        <div class="card" style="border: 1px solid mediumpurple;">
+            <div class="card-header">
+                <h5>Top Selling Products</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-responsive table-hover">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Product</th>
+                            <th>Sales</th>
+                            <th>Revenue</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null)
+                        {
+                            var count = 1;
+                            foreach (var item in Model.productVsSales)
+                            {
+                                <tr>
+                                    <td>@count</td>
+                                    <td class="text-capitalize">@item.product</td>
+                                    <td>@item.sales</td>
+                                    <td>R @string.Format("{0:0.00}", item.revenue)</td>
+                                </tr>
+                                count++;
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-6">
+        <div class="card" style="border: 1px solid mediumpurple;">
+            <div class="card-header">
+                <h5>Top Selling Locations</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-responsive table-hover">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Locations</th>
+                            <th>Sales</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null)
+                        {
+                            var count = 1;
+                            foreach (var item in Model.locationVsSales)
+                            {
+                                <tr>
+                                    <td>@count</td>
+                                    <td class="text-capitalize">@item.location</td>
+                                    <td>@item.sales</td>
+                                </tr>
+                                count++;
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var url = new URL(window.location.href);
+    var period = url.searchParams.get("period");
+
+    if (period != null) {
+        var elem = document.getElementById(period);
+        elem.style.backgroundColor = "mediumpurple";
+    } else {
+        var elem = document.getElementById("all");
+        elem.style.backgroundColor = "mediumpurple";
+    }
+</script>
+

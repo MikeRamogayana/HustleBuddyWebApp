@@ -1,0 +1,24 @@
+﻿
+
+<div class="modal-header">
+    <h5 class="modal-title" id="authLabel">Vendor Login</h5>
+</div>
+<div class="modal-body">
+    <div class="form-group mb-2">
+        <input id="email" placeholder="Email" class="form-control" style="border: 1px solid mediumpurple;" required />
+    </div>
+    <div class="form-group mb-2">
+        <input id="password" placeholder="Password" class="form-control" style="border: 1px solid mediumpurple;" required />
+    </div>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary w-25" onclick="GetModel('vendor/reset')">Reset</button>
+    <button type="button" class="btn btn-success w-25" onclick="GetModel('vendor/register')">Register</button>
+    <button class="btn w-25" style="background-color: mediumpurple;" onclick="Login()">Login</button>
+</div>
+
+<script>
+    function Login() {
+        window.location.href = window.location.pathname + "/auth/login/" + document.getElementById("email").value + "/" + document.getElementById("password").value;
+    }
+</script>

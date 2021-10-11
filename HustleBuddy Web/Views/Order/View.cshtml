@@ -1,0 +1,100 @@
+﻿@model HustleBuddy_Web.ViewModels.OrderViewModel
+
+<div class="modal-header">
+    <h5 class="modal-title" id="add-view-editLabel">Order Details</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<div class="modal-body">
+    <div class="row">
+        <div class="col-6">
+            <div class="card">
+                <div class="card-header">
+                    <h6>Customer Details</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <label class="col-form-label fw-bold">Status</label>
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="col-form-label text-capitalize">@Model.order.status</label>
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="col-form-label fw-bold">Order Number</label>
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="col-form-label">@Model.order.orderId</label>
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="col-form-label fw-bold">Customer Name</label>
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="col-form-label">@Model.order.customerName</label>
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="col-form-label fw-bold">Contact Number</label>
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="col-form-label">@Model.order.contactNumber</label>
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="col-form-label fw-bold">Address</label>
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="col-form-label">@Model.order.location</label>
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="col-form-label fw-bold">Made On</label>
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="col-form-label">@Model.order.dateMade.ToString("yyyy-MM-dd @ HH:mm")</label>
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="col-form-label fw-bold">Expected On</label>
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="col-form-label">@Model.order.dateExpected.ToString("yyyy-MM-dd @ HH:mm")</label>
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="col-form-label fw-bold">Description</label>
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="col-form-label">@Model.order.description</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="card">
+                <div class="card-header">
+                    <h6>Ordered Products</h6>
+                </div>
+                <div class="card-body">
+                    <table class="table table-hover table-responsive">
+                        <thead>
+                            <tr>
+                                <th>Product Code</th>
+                                <th>Product Name</th>
+                                <th>Quantity</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0; i < Model.products.Count; i++)
+                            {
+                                <tr>
+                                    <td>@Model.orderedProducts[i].productCode</td>
+                                    <td>@Model.products[i].productName</td>
+                                    <td>@Model.orderedProducts[i].quantity</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary w-25" data-bs-dismiss="modal">Close</button>
+</div>

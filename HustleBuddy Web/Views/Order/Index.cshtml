@@ -1,0 +1,234 @@
+﻿@model IEnumerable<HustleBuddy_Web.Models.Order>
+
+@{
+    ViewData["Title"] = "Order";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="modal fade" id="add-view-edit" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="add-view-editLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-lg">
+        <div class="modal-content" style="border: 1px solid mediumpurple;">
+            <!--Content Here-->
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="delete" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="add-view-editLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable">
+        <div class="modal-content" style="border: 1px solid mediumpurple;">
+            <!--Content Here-->
+        </div>
+    </div>
+</div>
+
+<div class="card" style="border: 1px solid mediumpurple;">
+    <div class="card-header">
+        <h4>Orders</h4>
+    </div>
+    <div class="card-body">
+        <div class="row mb-2">
+            <div class="col-9"></div>
+            <div class="col-3 justify-content-end">
+                <div class="input-group">
+                    <input id="search" class="form-control" placeholder="Search" style="border: 1px solid mediumpurple;" />
+                    <button type="button" onclick="Search()" class="btn" style="border: 1px solid mediumpurple;"><i class="far fa-search" style="color: mediumpurple;"></i></button>
+                </div>
+            </div>
+        </div>
+        <div class="row mb-2">
+            <div class="col-7">
+                <a class="btn px-lg-5 mb-1" style="background-color: mediumpurple;" onclick="GetModel('order/create')" href="#" data-bs-toggle="modal" data-bs-target="#add-view-edit"><i class="far fa-plus"></i> Create New</a>
+            </div>
+            <div class="col-5 btn-group">
+                <a id="all" href="?status=all" class="btn btn-light w-25">All</a>
+                <a id="pending" href="?status=pending" class="btn btn-light w-25">Pending</a>
+                <a id="completed" href="?status=completed" class="btn btn-light w-25">Completed</a>
+                <a id="cancelled" href="?status=cancelled" class="btn btn-light w-25">Cancelled</a>
+            </div>
+        </div>
+
+        <div id="alert" class="alert alert-info alert-dismissible fade show" role="alert" style="padding-bottom: 5px; padding-top: 5px;">
+            <div id="message"></div>
+        </div>
+
+        <table class="table table-sm table-hover table-responsive">
+            <thead>
+                <tr>
+                    <th>Status</th>
+                    <th>Order Number</th>
+                    <th>Customer Name</th>
+                    <th>Contact Number</th>
+                    <th>Made On</th>
+                    <th>Expected On</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null)
+                {
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            @if (item.status.ToLower().Equals("pending"))
+                            {
+                                <td class="text-center">
+                                    <a href="~/orders?status=pending" class="btn btn-sm btn-info w-100 h-50">Pending</a>
+                                </td>
+                            }
+                            else if (item.status.ToLower().Equals("completed"))
+                            {
+                                <td class="text-center">
+                                    <a href="~/orders?status=completed" class="btn btn-sm btn-success w-100 h-50">Completed</a>
+                                </td>
+                            }
+                            else
+                            {
+                                <td class="text-center">
+                                    <a href="~/orders?status=cancelled" class="btn btn-sm btn-danger w-100 h-50">Cancelled</a>
+                                </td>
+                            }
+                            <td class="text-center">
+                                @Html.DisplayFor(modelItem => item.orderId)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.customerName)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.contactNumber)
+                            </td>
+                            <td>
+                                @item.dateMade.ToString("yyyy-MM-dd HH:mm")
+                            </td>
+                            <td>
+                                @item.dateExpected.ToString("yyyy-MM-dd HH:mm")
+                            </td>
+                            <td>
+                                <a class="mx-2" onclick="GetModel('order/view/@item.orderId')" href="#" data-bs-toggle="modal" data-bs-target="#add-view-edit"><i class="far fa-eye text-info" data-bs-toggle="tooltip" data-bs-placement="bottom" title="view"></i></a>
+                                <a class="mx-2" onclick="GetModel('order/edit/@item.orderId')" href="#" data-bs-toggle="modal" data-bs-target="#add-view-edit"><i class="far fa-edit text-warning" data-bs-toggle="tooltip" data-bs-placement="bottom" title="edit"></i></a>
+                                <a class="mx-2" onclick="GetModel('order/delete/@item.orderId')" href="#" data-bs-toggle="modal" data-bs-target="#delete"><i class="far fa-trash text-danger" data-bs-toggle="tooltip" data-bs-placement="bottom" title="delete"></i></a>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+        <div class="row">
+            <div class="col-sm-4 btn-group">
+                <p>Page <span id="page">0</span> of <span id="page_number">@ViewBag.pageCount</span></p>
+            </div>
+            <div class="col-sm-7"></div>
+            <div class="col-sm-1 btn-group-sm justify-content-end">
+                <button id="btnPrev" type="button" onclick="window.history.back()" class="btn" style="background-color: lightgray" data-bs-toggle="tooltip" data-bs-placement="bottom" title="previous page"> < </button>
+                <button id="btnNext" type="button" onclick="NextPage()" class="btn" style="background-color: lightgray" data-bs-toggle="tooltip" data-bs-placement="bottom" title="next page"> > </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    function Search() {
+        window.location.href = window.location.pathname + "?search=" + document.getElementById("search").value;
+    }
+
+    function NextPage() {
+        var href = window.location.href;
+        var url = new URL(href);
+        var page = url.searchParams.get("page");
+        var status = url.searchParams.get("status");
+        var status = url.searchParams.get("search");
+
+        var next_page = 0;
+
+        if (page != null) {
+            next_page = parseInt(page) + 1;
+            href = href.replace("page=" + page, "page=" + next_page);
+        } else {
+            if (status != null || search != null) {
+                href += "&page=1";
+            } else {
+                href += "?page=1";
+            }
+        }
+
+        window.location.href = href;
+    }
+
+    function MakePages() {
+        var url = new URL(window.location.href);
+        var page = url.searchParams.get("page");
+        var search = url.searchParams.get("search");
+
+        var txt_page = document.getElementById("page");
+        var txt_page_number = document.getElementById("page_number");
+
+        var page_number = txt_page_number.innerText;
+
+        var next = document.getElementById("btnNext");
+        var prev = document.getElementById("btnPrev");
+
+        if (page == null) {
+            prev.disabled = true;
+            txt_page.innerText = 1;
+            if (page_number == 1) {
+                next.disabled = true;
+            }
+        } else {
+            if (parseInt(page) + 1 == parseInt(page_number)) {
+                next.disabled = true;
+            }
+            txt_page.innerText = parseInt(page) + 1;
+        }
+
+        if (search != null) {
+            document.getElementById("search").value = search;
+        }
+    }
+
+    MakePages();
+    var url = new URL(window.location.href);
+    var status = url.searchParams.get("status");
+
+    if (status == "null") {
+        status = "all";
+    }
+
+    var elem = document.getElementById(status);
+    elem.style.backgroundColor = "mediumpurple";
+
+    var statusAlert = document.getElementById("alert");
+    var error = url.searchParams.get("error");
+    var success = url.searchParams.get("success");
+    if (error == "create") {
+        statusAlert.classList.remove("alert-info");
+        statusAlert.classList.add("alert-danger");
+        document.getElementById("message").innerText = "Could Not Create Order, An Error Occurred!!!"
+    } else if (error == "update") {
+        statusAlert.classList.remove("alert-info");
+        statusAlert.classList.add("alert-danger");
+        document.getElementById("message").innerText = "Could Not Update Order, An Error Occurred!!!"
+    } else if (error == "delete") {
+        statusAlert.classList.remove("alert-info");
+        statusAlert.classList.add("alert-danger");
+        document.getElementById("message").innerText = "Could Not Delete Order, An Error Occurred!!!"
+    } else if (success == "create") {
+        statusAlert.classList.add("alert-info");
+        statusAlert.classList.remove("alert-danger");
+        document.getElementById("message").innerText = "Order Created Successfully..."
+    } else if (success == "update") {
+        statusAlert.classList.add("alert-info");
+        statusAlert.classList.remove("alert-danger");
+        document.getElementById("message").innerText = "Order Updated Successfully..."
+    } else if (success == "delete") {
+        statusAlert.classList.add("alert-info");
+        statusAlert.classList.remove("alert-danger");
+        document.getElementById("message").innerText = "Order Deleted Successfully..."
+    } else {
+        statusAlert.style.display = "none";
+    }
+
+    $(".alert").delay(4000).slideUp(1000, function () {
+        $(this).alert('close');
+    });
+
+</script>

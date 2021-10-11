@@ -1,0 +1,25 @@
+﻿@model HustleBuddy_Web.Models.TradingStock
+
+<form asp-action="AddTrading">
+    <div class="modal-header">
+        <h5 class="modal-title" id="add-view-editLabel">Add Trading Stock</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+    <div class="modal-body">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <input asp-for="stockId" type="hidden" />
+        <input asp-for="sold" type="hidden" />
+        <div class="form-group mb-1">
+            <select class="form-select" asp-for="productCode" asp-items="@(new SelectList(ViewBag.products, "productCode", "productName"))" style="border: 1px solid mediumpurple;"></select>
+            <span asp-validation-for="productCode" class="text-danger"></span>
+        </div>
+        <div class="form-group mb-1">
+            <input asp-for="quantity" class="form-control" placeholder="Quantity" style="border: 1px solid mediumpurple;" />
+            <span asp-validation-for="quantity" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary w-25" data-bs-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-success w-25">Add</button>
+    </div>
+</form>

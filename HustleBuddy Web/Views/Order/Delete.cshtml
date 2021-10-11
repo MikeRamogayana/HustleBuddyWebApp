@@ -1,0 +1,16 @@
+﻿@model HustleBuddy_Web.Models.Order
+
+<form asp-action="Remove">
+    <input asp-for="orderId" type="hidden" />
+    <div class="modal-header">
+        <h5 class="modal-title" id="add-view-editLabel">Delete Product</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+    <div class="modal-body">
+        <h3>Are you sure you want to delete Order #@Model.orderId by @Model.customerName?</h3>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary w-25" data-bs-dismiss="modal">Close</button>
+        <button type="submit" asp-action="Remove" class="btn btn-danger w-25">Delete</button>
+    </div>
+</form>

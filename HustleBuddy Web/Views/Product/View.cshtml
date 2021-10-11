@@ -1,0 +1,43 @@
+﻿@model HustleBuddy_Web.Models.Product
+
+<div class="modal-header">
+    <h5 class="modal-title" id="add-view-editLabel">Product Details</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<div class="modal-body">
+    <div class="row">
+        <div class="col-sm-6">
+            <label class="col-form-label fw-bold">Product Code</label>
+        </div>
+        <div class="col-sm-6">
+            <label class="col-form-label">@Model.productCode</label>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6">
+            <label class="col-form-label fw-bold">Product Name</label>
+        </div>
+        <div class="col-sm-6">
+            <label class="col-form-label">@Model.productName</label>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6">
+            <label class="col-form-label fw-bold">Selling Price</label>
+        </div>
+        <div class="col-sm-6">
+            <label class="col-form-label">R @string.Format("{0:0.00}", Model.sellingPrice)</label>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6">
+            <label class="col-form-label fw-bold">Description</label>
+        </div>
+        <div class="col-sm-6">
+            <label class="col-form-label">@Model.description</label>
+        </div>
+    </div>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary w-25" data-bs-dismiss="modal">Close</button>
+</div>

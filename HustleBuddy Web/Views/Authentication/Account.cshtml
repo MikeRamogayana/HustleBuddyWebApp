@@ -1,0 +1,168 @@
+﻿@model HustleBuddy_Web.Models.Vendor
+
+@{
+    ViewData["Title"] = "Account";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h3 class="mb-2">Account</h3>
+
+<div class="card" style="border: 1px solid mediumpurple;">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-7">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Profile</h5>
+                    </div>
+                    <div class="card-body">
+                        <form asp-action="Update">
+                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                            <input asp-for="vendorId" type="hidden" />
+                            <input asp-for="password" type="hidden" />
+                            <div class="form-group bg-light mb-1">
+                                <div id="updateAlert" class="alert alert-info alert-dismissible fade show" role="alert" style="padding-bottom: 5px; padding-top: 5px;">
+                                    <div id="updateStatus"></div>
+                                </div>
+                            </div>
+                            <div class="form-group mb-2">
+                                <input asp-for="firstName" class="form-control" placeholder="First Name" style="border: 1px solid mediumpurple;" required />
+                                <span asp-validation-for="firstName" class="text-danger"></span>
+                            </div>
+                            <div class="form-group mb-2">
+                                <input asp-for="lastName" class="form-control" placeholder="Last Name" style="border: 1px solid mediumpurple;" required />
+                                <span asp-validation-for="lastName" class="text-danger"></span>
+                            </div>
+                            <div class="form-group mb-2">
+                                <input asp-for="contactNumber" maxlength="10" minlength="10" type="number" class="form-control" placeholder="Contact Number" style="border: 1px solid mediumpurple;" required />
+                                <span asp-validation-for="contactNumber" class="text-danger"></span>
+                            </div>
+                            <div class="form-group mb-2">
+                                <input asp-for="residentialAddress" class="form-control" placeholder="Address" style="border: 1px solid mediumpurple;" required />
+                                <span asp-validation-for="residentialAddress" class="text-danger"></span>
+                            </div>
+                            <div class="form-group mb-2">
+                                <input asp-for="companyName" class="form-control" placeholder="Company Name" style="border: 1px solid mediumpurple;" required />
+                                <span asp-validation-for="companyName" class="text-danger"></span>
+                            </div>
+                            <div class="form-group mb-2">
+                                <input asp-for="email" class="form-control" placeholder="Email Address" style="border: 1px solid mediumpurple;" required />
+                                <span asp-validation-for="email" class="text-danger"></span>
+                            </div>
+                            <div class="form-group mb-2">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <button type="button" class="btn btn-outline-secondary w-100" disabled>-</button>
+                                    </div>
+                                    <div class="col-6">
+                                        <button type="submit" class="btn w-100" style="background-color: mediumpurple">Update</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-5">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Change Password</h5>
+                    </div>
+                    <div class="card-body">
+                        <form>
+                            <div id="changeAlert" class="alert alert-info alert-dismissible fade show" role="alert" style="padding-bottom: 5px; padding-top: 5px;">
+                                <div id="changeStatus"></div>
+                            </div>
+                            <div class="form-group mb-2">
+                                <input id="currentpassword" type="password" autocomplete="on" class="form-control" placeholder="Current Password" style="border: 1px solid mediumpurple;" required />
+                            </div>
+                            <div class="form-group mb-2">
+                                <input id="newpassword" type="password" autocomplete="on" class="form-control" placeholder="New Password" style="border: 1px solid mediumpurple;" required />
+                            </div>
+                            <div class="form-group mb-2">
+                                <input id="confirmpassword" class="form-control" type="password" autocomplete="on" placeholder="Confirm Password" style="border: 1px solid mediumpurple;" required />
+                            </div>
+                            <div class="form-group mb-2">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <button type="button" class="btn btn-outline-secondary w-100" disabled>-</button>
+                                    </div>
+                                    <div class="col-6">
+                                        <button type="button" onclick="changepassword()" class="btn w-100" style="background-color: mediumpurple">Change</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var url = new URL(window.location.href);
+    var updateAlert = document.getElementById("updateAlert");
+    var changeAlert = document.getElementById("changeAlert");
+    var error = url.searchParams.get("error");
+    var success = url.searchParams.get("success");
+
+    if (error == "change") {
+        changeAlert.classList.remove("alert-info");
+        changeAlert.classList.add("alert-danger");
+        document.getElementById("changeStatus").innerText = "Incorrect Password Entered!!!"
+    } else if (success == "change") {
+        changeAlert.classList.add("alert-info");
+        changeAlert.classList.remove("alert-danger");
+        document.getElementById("changeStatus").innerText = "Password Updated Successfully..."
+    } else {
+        changeAlert.style.display = "none";
+    }
+
+    if (error == "update") {
+        updateAlert.classList.remove("alert-info");
+        updateAlert.classList.add("alert-danger");
+        document.getElementById("updateStatus").innerText = "Could Not Update Account. An Error Occurred!!!"
+    } else if (success == "updateStatus") {
+        updateAlert.classList.add("alert-info");
+        updateAlert.classList.remove("alert-danger");
+        document.getElementById("updateStatus").innerText = "Account Updated Successfully..."
+    } else {
+        updateAlert.style.display = "none";
+    }
+
+    if (error != null || success != null) {
+        $(".alert").delay(6000).slideUp(1000, function () {
+            $(this).alert('hide');
+        });
+    }
+
+    function changepassword() {
+        var currentpassword = document.getElementById("currentpassword").value;
+        var newpassword = document.getElementById("newpassword").value;
+        var confirmpassword = document.getElementById("confirmpassword").value;
+        if (currentpassword == "") {
+            changeAlert.classList.remove("alert-info");
+            changeAlert.classList.add("alert-danger");
+            document.getElementById("changeStatus").innerText = "Current Password Cannot Be Empty!!!";
+            changeAlert.style.display = "";
+        } else if (newpassword.length < 5) {
+            changeAlert.classList.remove("alert-info");
+            changeAlert.classList.add("alert-danger");
+            document.getElementById("changeStatus").innerText = "New Password Cannot Be Less Than 5 Characters!!!";
+            changeAlert.style.display = "";
+        } else if (newpassword != confirmpassword) {
+            changeAlert.classList.remove("alert-info");
+            changeAlert.classList.add("alert-danger");
+            document.getElementById("changeStatus").innerText = "Passwords Do Not Match!!!";
+            changeAlert.style.display = "";
+        } else {
+            window.location.href = "/authentication/change?currentpassword=" + currentpassword + "&newpassword=" + newpassword;
+        }
+        if (error != null || success != null) {
+            $(".alert").delay(8000).slideUp(1000, function () {
+                $(this).alert('hide');
+            });
+        }
+    }
+</script>

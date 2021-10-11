@@ -1,0 +1,165 @@
+﻿@model IEnumerable<HustleBuddy_Web.Models.Product>
+
+@{
+    ViewData["Title"] = "Product";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="modal fade" id="add-view-edit" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="add-view-editLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" style="border: 1px solid mediumpurple;">
+            <!--Content Here-->
+        </div>
+    </div>
+</div>
+
+<div class="card" style="border: 1px solid mediumpurple;">
+
+    <div class="card-header">
+        <h4>Products</h4>
+    </div>
+    <div class="card-body">
+
+        <a class="btn px-lg-5 mb-2" style="background-color: mediumpurple;" onclick="GetModel('product/create')" href="#" data-bs-toggle="modal" data-bs-target="#add-view-edit"><i class="far fa-plus"></i> Create New</a>
+        
+        <div id="alert" class="alert alert-info alert-dismissible fade show" role="alert" style="padding-bottom: 5px; padding-top: 5px;">
+            <div id="message"></div>
+        </div>
+
+        <table class="table table-sm table-hover table-responsive">
+            <thead>
+                <tr>
+                    <th>
+                        Code
+                    </th>
+                    <th>
+                        Product Name
+                    </th>
+                    <th>
+                        Selling Price
+                    </th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null)
+                {
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.productCode)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.productName)
+                            </td>
+                            <td>
+                                R @string.Format("{0:0.00}", item.sellingPrice)
+                            </td>
+                            <td>
+                                <a onclick="GetModel('product/view/@item.productCode')" href="#" data-bs-toggle="modal" data-bs-target="#add-view-edit"><i class="far fa-eye text-info" data-bs-toggle="tooltip" data-bs-placement="bottom" title="view"></i></a>
+                                <a class="mx-2" onclick="GetModel('product/edit/@item.productCode')" href="#" data-bs-toggle="modal" data-bs-target="#add-view-edit"><i class="far fa-edit text-warning" data-bs-toggle="tooltip" data-bs-placement="bottom" title="edit"></i></a>
+                                <a onclick="GetModel('product/delete/@item.productCode')" href="#" data-bs-toggle="modal" data-bs-target="#add-view-edit"><i class="far fa-trash text-danger" data-bs-toggle="tooltip" data-bs-placement="bottom" title="delete"></i></a>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+        <div class="row">
+            <div class="col-sm-4 btn-group">
+                <p>Page <span id="page">0</span> of <span id="page_number">@ViewBag.pageCount</span></p>
+            </div>
+            <div class="col-sm-7"></div>
+            <div class="col-sm-1 btn-group-sm justify-content-end">
+                <button id="btnPrev" type="button" onclick="window.history.back()" class="btn" style="background-color: lightgray" data-bs-toggle="tooltip" data-bs-placement="bottom" title="previous page"> < </button>
+                <button id="btnNext" type="button" onclick="NextPage()" class="btn" style="background-color: lightgray" data-bs-toggle="tooltip" data-bs-placement="bottom" title="next page"> > </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function NextPage() {
+        var href = window.location.href;
+        var url = new URL(href);
+        var page = url.searchParams.get("page");
+
+        var next_page = 0;
+
+        if (page != null) {
+            next_page = parseInt(page) + 1;
+            href = href.replace("page=" + page, "page=" + next_page);
+        } else {
+            href += "?page=1";
+        }
+
+        window.location.href = href;
+    }
+
+    function MakePages() {
+        var url = new URL(window.location.href);
+        var page = url.searchParams.get("page");
+
+        var txt_page = document.getElementById("page");
+        var txt_page_number = document.getElementById("page_number");
+
+        var page_number = txt_page_number.innerText;
+
+        var next = document.getElementById("btnNext");
+        var prev = document.getElementById("btnPrev");
+
+        if (page == null) {
+            prev.disabled = true;
+            txt_page.innerText = 1;
+            if (page_number == 1) {
+                next.disabled = true;
+            }
+        } else {
+            if (parseInt(page) + 1 == parseInt(page_number)) {
+                next.disabled = true;
+            }
+            txt_page.innerText = parseInt(page) + 1;
+        }
+    }
+
+    MakePages();
+
+    var url = new URL(window.location.href);
+    var statusAlert = document.getElementById("alert");
+    var error = url.searchParams.get("error");
+    var success = url.searchParams.get("success");
+
+    if (error == "create") {
+        statusAlert.classList.remove("alert-info");
+        statusAlert.classList.add("alert-danger");
+        document.getElementById("message").innerText = "Could Not Create Product, An Error Occurred!!!"
+    } else if (error == "update") {
+        statusAlert.classList.remove("alert-info");
+        statusAlert.classList.add("alert-danger");
+        document.getElementById("message").innerText = "Could Not Update Product, An Error Occurred!!!"
+    } else if (error == "delete") {
+        statusAlert.classList.remove("alert-info");
+        statusAlert.classList.add("alert-danger");
+        document.getElementById("message").innerText = "Could Not Delete Product, An Error Occurred!!!"
+    } else if (success == "create") {
+        statusAlert.classList.add("alert-info");
+        statusAlert.classList.remove("alert-danger");
+        document.getElementById("message").innerText = "Product Created Successfully..."
+    } else if (success == "update") {
+        statusAlert.classList.add("alert-info");
+        statusAlert.classList.remove("alert-danger");
+        document.getElementById("message").innerText = "Product Updated Successfully..."
+    } else if (success == "delete") {
+        statusAlert.classList.add("alert-info");
+        statusAlert.classList.remove("alert-danger");
+        document.getElementById("message").innerText = "Product Deleted Successfully..."
+    } else {
+        statusAlert.style.display = "none";
+    }
+
+    $(".alert").delay(4000).slideUp(1000, function () {
+        $(this).alert('close');
+    });
+
+</script>

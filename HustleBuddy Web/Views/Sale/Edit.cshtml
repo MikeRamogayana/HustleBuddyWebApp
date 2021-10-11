@@ -1,0 +1,86 @@
+﻿@model HustleBuddy_Web.ViewModels.CreditViewModel
+
+<form asp-action="Update">
+    <div class="modal-header">
+        <h3 class="modal-title" id="add-view-editLabel">Credit Sale</h3>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+    <div class="modal-body">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <input asp-for="sale.saleId" type="hidden" />
+        <input asp-for="sale.productCode" type="hidden" />
+        <input asp-for="sale.vendorId" type="hidden" />
+        <input asp-for="sale.cashOrCredit" type="hidden" />
+        <input asp-for="creditSale.saleId" type="hidden" />
+        <input asp-for="creditSale.creditId" type="hidden" />
+        <input asp-for="creditSale.vendorId" type="hidden" />
+        <input asp-for="creditSale.saleId" type="hidden" />
+
+        <div class="card" style="border: 1px solid mediumpurple;">
+            <div class="card-header">
+                <h5 class="card-title">Credit Details</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-sm table-hover table-responsive">
+                    <thead>
+                        <tr>
+                            <th class="text-center">Customer Name</th>
+                            <th class="text-center">Contact Number</th>
+                            <th class="text-center">Product</th>
+                            <th class="text-center">Quantity</th>
+                            <th class="text-center">Amount</th>
+                            <th class="text-center">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="text-capitalize text-center">@Model.creditSale.customerName</td>
+                            <td class="text-center">@Model.creditSale.contactNumber</td>
+                            <td class="text-capitalize text-center">@Model.product.productName</td>
+                            <td class="text-center">@Model.sale.quantity</td>
+                            <td class="text-center">R @string.Format("{0:0.00}", Model.creditSale.creditAmount)</td>
+                            <td class="text-capitalize text-center">@Model.creditSale.status</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <hr />
+
+        <div class="card" style="border: 1px solid mediumpurple;">
+            <div class="card-header">
+                <h5 class="card-title">Payment Details</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-sm table-hover table-responsive">
+                    <thead>
+                        <tr>
+                            <th class="text-center">Credit On</th>
+                            <th class="text-center">Last Paid On</th>
+                            <th class="text-center">Due On</th>
+                            <th class="text-center">Amount Paid</th>
+                            <th class="text-center">Amount Owed</th>
+                            <th class="text-center">Payment Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="text-center">@Model.creditSale.date.ToString("yyyy-MM-dd")</td>
+                            <td class="text-center">@Model.creditSale.payDate.ToString("yyyy-MM-dd")</td>
+                            <td class="text-center">@Model.creditSale.dueDate.ToString("yyyy-MM-dd")</td>
+                            <td class="text-center">R @string.Format("{0:0.00}", Model.creditSale.paidAmount)</td>
+                            <td class="text-center">R @string.Format("{0:0.00}", Model.creditSale.creditAmount - Model.creditSale.paidAmount)</td>
+                            <td class="text-center w-25"><input asp-for="creditSale.paidAmount" value="0" class="form-control-sm text-end" style="border: 1px solid mediumpurple;" required /></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary w-25" data-bs-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-success w-25">Update</button>
+    </div>
+</form>
+

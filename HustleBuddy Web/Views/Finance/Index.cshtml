@@ -1,0 +1,276 @@
+﻿@model HustleBuddy_Web.ViewModels.FinanceViewModel
+
+@{
+    ViewData["Title"] = "Finance";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="modal fade" id="add-view-edit" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="add-view-editLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content" style="border: 1px solid mediumpurple;">
+            <!--Content Here-->
+        </div>
+    </div>
+</div>
+
+<div class="card" style="border: 1px solid mediumpurple;">
+    <div class="card-header">
+        <h4>Finances</h4>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-6">
+                <a class="btn px-lg-5 mb-2" style="background-color: mediumpurple;" onclick="GetModel('budget/create')" href="#" data-bs-toggle="modal" data-bs-target="#add-view-edit"><i class="far fa-plus"></i> Create Budget</a>
+            </div>
+            <div class="col-6">
+                <div class="row">
+                    <div class="col-4"></div>
+                    <div class="col-4">
+                        <select id="year" onchange="Filter()" class="form-select" asp-items="@(new SelectList(ViewBag.years, "key", "value"))" style="border: 1px solid mediumpurple;"></select>
+                    </div>
+                    <div class="col-4">
+                        <select id="month" onchange="Filter()" class="form-select" asp-items="@(new SelectList(ViewBag.months, "key", "value"))" style="border: 1px solid mediumpurple;"></select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-4">
+                <div class="card" style="border: 1px solid mediumpurple;">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-6">
+                                <h4 class="text-muted">Expenses</h4>
+                            </div>
+                            <div class="col-6">
+                                <h4 class="text-end">R @string.Format("{0:0.00}", Model.totalExpenses)</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="card" style="border: 1px solid mediumpurple;">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-6">
+                                <h4 class="text-muted">Revenue</h4>
+                            </div>
+                            <div class="col-6">
+                                <h4 class="text-end">R @string.Format("{0:0.00}", Model.totalRevenue)</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="card" style="border: 1px solid mediumpurple;">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-6">
+                                <h4 class="text-muted">Profit</h4>
+                            </div>
+                            <div class="col-6">
+                                <h4 class="text-end">R @string.Format("{0:0.00}", Model.totalProfit)</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mt-2" style="border: 1px solid mediumpurple;">
+            <div class="card-body">
+
+                <div id="alert" class="alert alert-info alert-dismissible fade show" role="alert" style="padding-bottom: 5px; padding-top: 5px;">
+                    <div id="message"></div>
+                </div>
+
+                <div class="card-group">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>Product Expense Budget</h5>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-sm table-hover table-responsive">
+                                <thead>
+                                    <tr>
+                                        <th>Item</th>
+                                        <th>Budget</th>
+                                        <th>Expense</th>
+                                        <th>Remaining</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{
+                                        var products = ViewBag.products as List<Product>;
+                                        products.Sort((p, q) => p.productName.CompareTo(q.productName));
+                                        if (products != null)
+                                        {
+                                            @foreach (var product in products)
+                                            {
+                                                var budget = 0.0;
+                                                var expense = 0.0;
+                                                try
+                                                {
+                                                    budget = Model.monthlyBudget.productExpenseBudget.Where(b => b.productCode.Equals(product.productCode)).First().amount;
+                                                }
+                                                catch (Exception)
+                                                {
+
+                                                }
+                                                try
+                                                {
+                                                    expense = Model.productExpenses.Where(e => e.key.Equals(product.productCode)).First().value;
+                                                }
+                                                catch (Exception)
+                                                {
+
+                                                }
+                                                <tr>
+                                                    <td class="text-capitalize">@product.productName</td>
+                                                    <td>R @string.Format("{0:0.00}", budget)</td>
+                                                    <td>R @string.Format("{0:0.00}", expense)</td>
+                                                    <td>R @string.Format("{0:0.00}", budget - expense)</td>
+                                                </tr>
+                                            }
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>Daily Expense Budget</h5>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-sm table-hover table-responsive">
+                                <thead>
+                                    <tr>
+                                        <th>Item</th>
+                                        <th>Budget</th>
+                                        <th>Expense</th>
+                                        <th>Remaining</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{ 
+                                        var transportBudget = 0.0;
+                                        var lunchBudget = 0.0;
+                                        var otherBudget = 0.0;
+                                        if(Model.monthlyBudget.dailyExpenseBudget != null)
+                                        {
+                                            transportBudget = Model.monthlyBudget.dailyExpenseBudget.transport;
+                                            lunchBudget = Model.monthlyBudget.dailyExpenseBudget.lunch;
+                                            otherBudget = Model.monthlyBudget.dailyExpenseBudget.other;
+                                        }
+                                    }
+                                    <tr>
+                                        <th>Transport</th>
+                                        <td>R @string.Format("{0:0.00}", transportBudget)</td>
+                                        <td>R @string.Format("{0:0.00}", Model.dailyExpenses.transport)</td>
+                                        <td>R @string.Format("{0:0.00}", transportBudget - Model.dailyExpenses.transport)</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Lunch</th>
+                                        <td>R @string.Format("{0:0.00}", lunchBudget)</td>
+                                        <td>R @string.Format("{0:0.00}", Model.dailyExpenses.lunch)</td>
+                                        <td>R @string.Format("{0:0.00}", lunchBudget - Model.dailyExpenses.lunch)</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Other</th>
+                                        <td>R @string.Format("{0:0.00}", otherBudget)</td>
+                                        <td>R @string.Format("{0:0.00}", Model.dailyExpenses.other)</td>
+                                        <td>R @string.Format("{0:0.00}", otherBudget - Model.dailyExpenses.other)</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <div class="row">
+                    @{
+                        var totalBudget = 0.0;
+                        if(Model.monthlyBudget.dailyExpenseBudget != null)
+                        {
+                            totalBudget = Model.monthlyBudget.dailyExpenseBudget.lunch + Model.monthlyBudget.dailyExpenseBudget.transport + Model.monthlyBudget.dailyExpenseBudget.other;
+                        }
+                        if(Model.monthlyBudget.productExpenseBudget != null)
+                        {
+                            totalBudget += Model.monthlyBudget.productExpenseBudget.Sum(m => m.amount);
+                        }
+                    }
+                    <div class="col text-uppercase">
+                        <h6>Total Budget: R @string.Format("{0:0.00}", totalBudget)</h6>
+                    </div>
+                    <div class="col text-uppercase">
+                        <h6 class="text-center">Total Expense: R @string.Format("{0:0.00}", Model.totalExpenses)</h6>
+                    </div>
+                    <div class="col text-uppercase">
+                        <h6 class="text-end">Total Remaining: R @string.Format("{0:0.00}",  totalBudget - Model.totalExpenses)</h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    function Filter() {
+        var txt_month = document.getElementById("month");
+        var txt_year = document.getElementById("year");
+
+        var month = txt_month.value;
+        var year = txt_year.value;
+
+        var href = window.location.pathname + "?month=" + month + "&year=" + year;
+        window.location.href = href;
+    }
+
+    var url = new URL(window.location.href);
+    var month = url.searchParams.get("month");
+    var year = url.searchParams.get("year");
+    var txt_month = document.getElementById("month");
+    var txt_year = document.getElementById("year");
+
+    if (year == null || month == null) {
+        txt_month.value = (new Date().getMonth()) + 1;
+        txt_year.value = new Date().getFullYear();
+    } else {
+        txt_month.value = month;
+        txt_year.value = year;
+    }
+
+    var statusAlert = document.getElementById("alert");
+    var error = url.searchParams.get("error");
+    var success = url.searchParams.get("success");
+    if (error == "create") {
+        statusAlert.classList.remove("alert-info");
+        statusAlert.classList.add("alert-danger");
+        document.getElementById("message").innerText = "Could Not Create Budget, An Error Occurred!!!"
+    } else if (error == "update") {
+        statusAlert.classList.remove("alert-info");
+        statusAlert.classList.add("alert-danger");
+        document.getElementById("message").innerText = "Could Not Update Budget, An Error Occurred!!!"
+    } else if (success == "create") {
+        statusAlert.classList.add("alert-info");
+        statusAlert.classList.remove("alert-danger");
+        document.getElementById("message").innerText = "Budget Created Successfully..."
+    } else if (success == "update") {
+        statusAlert.classList.add("alert-info");
+        statusAlert.classList.remove("alert-danger");
+        document.getElementById("message").innerText = "Budget Updated Successfully..."
+    } else {
+        statusAlert.style.display = "none";
+    }
+
+    $(".alert").delay(4000).slideUp(1000, function () {
+        $(this).alert('close');
+    });
+</script>
+

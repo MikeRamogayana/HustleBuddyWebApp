@@ -1,0 +1,108 @@
+﻿@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor httpContextAccessor
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HustleBuddy - @ViewData["Title"]</title>
+    <link rel="icon" type="image/x-icon" href="~/img/icon.png" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+</head>
+
+<body>
+
+    <div class="container-fluid">
+
+        <nav class="navbar navbar-expand-lg fixed-top" style="background-color:rgb(232,232,232); border-bottom:1px solid mediumpurple;">
+            <div class="container-fluid">
+                <a href="/">
+                    <img src="~/img/logo.png" height="50">
+                </a>
+                <div class="collapse navbar-collapse d-flex flex-row-reverse" id="navbarSupportedContent">
+                    <ul class="navbar-nav mr-auto px-5" style="color: black;">
+                        <li id="account" class="nav-item dropdown" runat="server">
+                            <a class="nav-link dropdown-toggle active" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color: black; "><i class="fas fa-user-circle"></i><span style="padding-left:10px;" id="user" runat="server">@httpContextAccessor.HttpContext.Session.GetString("vendorName")</span></a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <li><a href="~/authentication/account" class="link-dark dropdown-item">Account</a></li>
+                                <li><a href="~/authentication/logout" class="link-dark dropdown-item">Logout</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <div class="row flex-nowrap">
+            <div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0 ">
+                <div id="sidebar" runat="server" class=" shadow p-3 mb-5 rounded list-group list-group-flush d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 min-vh-100 fixed-top" style="margin-top:68px; width:inherit;">
+                    <a asp-controller="Dashboard" asp-action="Index" class="hb-listitem p-3">
+                        <span style="padding-right:5px;"><i class="fa fa-home"></i></span>
+                        Dashboard
+                    </a>
+
+                    <a asp-controller="Product" asp-action="Index" class="hb-listitem p-3">
+                        <span style=" padding-right:5px;"><i class="fa fa-th-large"></i></span>
+                        Products
+                    </a>
+                    <a asp-controller="Stock" asp-action="Index" class="hb-listitem p-3">
+                        <span style="padding-right:5px;"><i class="fa fa-shopping-basket"></i></span>
+                        Daily Stock
+                    </a>
+                    <a class="hb-listitem p-3" data-bs-toggle="collapse" href="#nav_order">
+                        <span style=" padding-right:5px;"><i class="fa fa-cart-arrow-down"></i></span>
+                        Orders
+                    </a>
+                    <div class="collapse nav flex-column ms-1 mt-3" id="nav_order" data-bs-parent="#sidebar" style="border-bottom:1.5px solid rgb(224,224,224); width:190px;">
+                        <ul class="btn-toggle-nav fw-normal pb-1 small list-unstyled">
+                            <li><a href="~/orders?status=all" class="link-dark dropdown-item" onMouseOver="this.style.color='mediumpurple'" onMouseOut="this.style.color='black'">All Orders</a></li>
+                            <li><a href="~/orders?status=pending" class="link-dark dropdown-item" onMouseOver="this.style.color='mediumpurple'" onMouseOut="this.style.color='black'">Pending</a></li>
+                            <li><a href="~/orders?status=completed" class="link-dark dropdown-item" onMouseOver="this.style.color='mediumpurple'" onMouseOut="this.style.color='black'">Completed</a></li>
+                            <li><a href="~/orders?status=cancelled" class="link-dark dropdown-item" onMouseOver="this.style.color='mediumpurple'" onMouseOut="this.style.color='black'">Cancelled</a></li>
+                        </ul>
+                    </div>
+                    <a class="hb-listitem p-3" data-bs-toggle="collapse" href="#nav_sale">
+                        <span style=" padding-right:5px;"><i class="fa fa-clock"></i></span>
+                        Sales
+                    </a>
+                    <div class="collapse nav flex-column ms-1 mt-3" id="nav_sale" data-bs-parent="#sidebar" style="border-bottom:1.5px solid rgb(224,224,224); width:190px;">
+                        <ul class="btn-toggle-nav fw-normal pb-1 small list-unstyled">
+                            <li><a href="~/sales?period=all" class="link-dark dropdown-item" onMouseOver="this.style.color='mediumpurple'" onMouseOut="this.style.color='black'">View All</a></li>
+                            <li><a href="~/sales?period=daily" class="link-dark dropdown-item" onMouseOver="this.style.color='mediumpurple'" onMouseOut="this.style.color='black'">Today</a></li>
+                            <li><a href="~/sales?period=weekly" class="link-dark dropdown-item" onMouseOver="this.style.color='mediumpurple'" onMouseOut="this.style.color='black'">Weekly</a></li>
+                            <li><a href="~/sales?period=monthly" class="link-dark dropdown-item" onMouseOver="this.style.color='mediumpurple'" onMouseOut="this.style.color='black'">Monthly</a></li>
+                        </ul>
+                    </div>
+                    <a asp-controller="Finance" asp-action="Index" class="hb-listitem p-3">
+                        <span style=" padding-right:5px;"><i class="fa fa-coins"></i></span>
+                        Finances
+                    </a>
+                    <a asp-controller="Statistic" asp-action="Index" class="hb-listitem p-3">
+                        <span style="padding-right:5px;"><i class="fa fa-chart-line"></i></span>
+                        Statistics
+                    </a>
+                </div>
+            </div>
+
+            <div class="col pt-3" style="margin-top:60px;">
+                <main role="main">
+                    @RenderBody()
+                </main>
+            </div>
+        </div>
+        <div class="container-fluid fixed-bottom border-top text-muted bg-white text-center">
+            &copy; 2021 - HustleBuddy by IO Software Group
+        </div>
+    </div>
+
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

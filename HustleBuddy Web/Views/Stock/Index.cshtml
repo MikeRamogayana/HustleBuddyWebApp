@@ -1,0 +1,197 @@
+﻿@model IEnumerable<HustleBuddy_Web.ViewModels.StockViewModel>
+
+@{
+    ViewData["Title"] = "Stock";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<div class="modal fade" id="add-view-edit" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="add-view-editLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content" style="border: 1px solid mediumpurple;">
+            <!--Content Here-->
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="delete-edit" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="add-view-editLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable">
+        <div class="modal-content" style="border: 1px solid mediumpurple;">
+            <!--Content Here-->
+        </div>
+    </div>
+</div>
+
+<div class="card" style="border: 1px solid mediumpurple;">
+
+    <div class="card-header">
+        <h4>Stocks</h4>
+    </div>
+
+    <div class="card-body">
+
+        @if (Model.Count() > 0)
+        {
+            if (!Model.First().dailyStock.date.Date.Equals(DateTime.Now.ToLocalTime().Date))
+            {
+                <a class="btn px-lg-5 mb-2" style="background-color: mediumpurple;" onclick="GetModel('stock/create')" href="#" data-bs-toggle="modal" data-bs-target="#add-view-edit"><i class="far fa-plus"></i> Create New</a>
+            }
+        }
+        else
+        {
+            <a class="btn px-lg-5 mb-2" style="background-color: mediumpurple;" onclick="GetModel('stock/create')" href="#" data-bs-toggle="modal" data-bs-target="#add-view-edit"><i class="far fa-plus"></i> Create New</a>
+        }
+
+    <div class="accordion" id="stock_accordion">
+        @{
+            var collapsed = "";
+            var show = "show";
+            var display = "";
+            var action = true;
+        }
+        @foreach (var item in Model)
+        {
+            <div class="accordion-item">
+                <h2 class="accordion-header" id=@("heading_" + item.dailyStock.stockId)>
+                    <button type="button" class="accordion-button @collapsed" data-bs-toggle="collapse" data-bs-target=@("#collapse_" + item.dailyStock.stockId) aria-expanded="false" aria-controls=@("collapse_" + item.dailyStock.stockId)>
+                        @item.dailyStock.date.ToLongDateString()
+                    </button>
+                </h2>
+                <div class="accordion-collapse collapse @show" id=@("collapse_" + item.dailyStock.stockId) aria-labelledby=@("heading_" + item.dailyStock.stockId) data-bs-parent="#stock_accordion">
+                    <div class="accordion-body">
+                        <div class="row">
+                            <div class="col-12">
+                                <h4 class="text-center text-capitalize">@item.dailyStock.location</h4>
+                            </div>
+                            <hr />
+                        </div>
+
+                        <div class="row">
+                            <div id="alert" class="alert alert-info alert-dismissible fade show" role="alert" style="padding-bottom: 5px; padding-top: 5px;">
+                                <div id="message"></div>
+                            </div>
+                        </div>
+
+                        <div class="row bg-light pt-2">
+                            <div class="col-4 ">
+                                <label class="form-label text-center w-100"><b>Transport:</b> R @string.Format("{0:0.00}", item.dailyExpense.transport)</label>
+                            </div>
+                            <div class="col-4">
+                                <label class="form-label text-center w-100"><b>Lunch:</b> R @string.Format("{0:0.00}", item.dailyExpense.lunch)</label>
+                            </div>
+                            <div class="col-4">
+                                <label class="form-label text-center w-100"><b>Other:</b> R @string.Format("{0:0.00}", item.dailyExpense.other)</label>
+                            </div>
+                        </div>
+                        <div class="row justify-content-end" style="display: @display">
+                            <button type="button" class="btn btn-sm btn-info my-1 w-25" onclick="GetModel('stock/create/trading/@item.dailyStock.stockId')" data-bs-toggle="modal" data-bs-target="#delete-edit"><i class="far fa-plus"></i> Add Product</button>
+                        </div>
+                        <div class="row">
+                            <table class="table table-sm table-hover table-responsive">
+                                <thead>
+                                    <tr>
+                                        <th>Product Name</th>
+                                        <th class="text-center">Quantity</th>
+                                        <th class="text-center">Sold</th>
+                                        <th class="text-center">Remaining</th>
+                                        @if (action)
+                                        {
+                                            <th class="text-center">Action</th>
+                                        }
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{
+                                        int totalStock = 0;
+                                        int totalSold = 0;
+                                        List<Product> products = new List<Product>();
+                                        if (ViewBag.products != null)
+                                        {
+                                            products = ViewBag.products as List<Product>;
+                                        }
+                                    }
+                                    @foreach (var tradingStock in item.tradingStocks)
+                                    {
+                                        <tr>
+                                            @if (products != null)
+                                            {
+                                                <td>@products.Where(p => p.productCode.Equals(tradingStock.productCode)).First().productName</td>
+                                            }
+                                            else
+                                            {
+                                                <td>@tradingStock.productCode</td>
+                                            }
+                                            <td class="text-center">@tradingStock.quantity</td>
+                                            <td class="text-center">@tradingStock.sold</td>
+                                            <td class="text-center">@(tradingStock.quantity - tradingStock.sold)</td>
+                                            @if (action)
+                                            {
+                                                <td class="text-center">
+                                                    <a class="mx-2" onclick="GetModel('stock/edit/trading/@tradingStock.stockId/@tradingStock.productCode')" href="#" data-bs-toggle="modal" data-bs-target="#delete-edit"><i class="far fa-edit text-warning" data-bs-toggle="tooltip" data-bs-placement="bottom" title="edit"></i></a>
+                                                    <a class="mx-2" onclick="GetModel('stock/delete/trading/@tradingStock.stockId/@tradingStock.productCode')" href="#" data-bs-toggle="modal" data-bs-target="#delete-edit"><i class="far fa-trash text-danger" data-bs-toggle="tooltip" data-bs-placement="bottom" title="delete"></i></a>
+                                                </td>
+                                            }
+
+                                        </tr>
+                                        totalStock += tradingStock.quantity;
+                                        totalSold += tradingStock.sold;
+                                    }
+                                </tbody>
+                            </table>
+                            <div class="row">
+                                <div class="col-4"><p class="text-center text-muted fw-bold">Quantity: @totalStock</p></div>
+                                <div class="col-4"><p class="text-center text-muted w-100 fw-bold">Sold: @totalSold</p></div>
+                                <div class="col-4"><p class="text-center text-muted w-100 fw-bold">Remaining: @(totalStock - totalSold)</p></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            collapsed = "collapsed";
+            show = "";
+            display = "none";
+            action = false;
+        }
+    </div>
+    </div>
+</div>
+
+<script>
+    var url = new URL(window.location.href);
+    var statusAlert = document.getElementById("alert");
+    var error = url.searchParams.get("error");
+    var success = url.searchParams.get("success");
+
+    if (error == "create") {
+        statusAlert.classList.remove("alert-info");
+        statusAlert.classList.add("alert-danger");
+        document.getElementById("message").innerText = "Could Not Create Trading Stock, An Error Occurred!!!"
+    } else if (error == "update") {
+        statusAlert.classList.remove("alert-info");
+        statusAlert.classList.add("alert-danger");
+        document.getElementById("message").innerText = "Could Not Update Trading Stock, An Error Occurred!!!"
+    } else if (error == "delete") {
+        statusAlert.classList.remove("alert-info");
+        statusAlert.classList.add("alert-danger");
+        document.getElementById("message").innerText = "Could Not Delete Trading Stock, An Error Occurred!!!"
+    } else if (success == "create") {
+        statusAlert.classList.add("alert-info");
+        statusAlert.classList.remove("alert-danger");
+        document.getElementById("message").innerText = "Trading Stock Created Successfully..."
+    } else if (success == "update") {
+        statusAlert.classList.add("alert-info");
+        statusAlert.classList.remove("alert-danger");
+        document.getElementById("message").innerText = "Trading Stock Updated Successfully..."
+    } else if (success == "delete") {
+        statusAlert.classList.add("alert-info");
+        statusAlert.classList.remove("alert-danger");
+        document.getElementById("message").innerText = "Trading Stock Deleted Successfully..."
+    } else {
+        statusAlert.style.display = "none";
+    }
+
+    $(".alert").delay(4000).slideUp(1000, function () {
+        $(this).alert('close');
+    });
+
+</script>

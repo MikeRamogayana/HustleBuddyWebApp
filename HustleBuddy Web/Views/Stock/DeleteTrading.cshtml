@@ -1,0 +1,20 @@
+﻿@model HustleBuddy_Web.Models.TradingStock
+
+<form asp-action="RemoveTrading">
+    <div class="modal-header">
+        <h5 class="modal-title" id="add-view-editLabel">Delete Trading Stock</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+    <div class="modal-body">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <input asp-for="productCode" type="hidden" />
+        <input asp-for="stockId" type="hidden" />
+        <input asp-for="sold" type="hidden" />
+        <input asp-for="quantity" type="hidden" />
+        <h3>Are you sure you want to delete <span class="text-capitalize">@ViewBag.productName?</span></h3>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary w-25" data-bs-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-danger w-25">Delete</button>
+    </div>
+</form>

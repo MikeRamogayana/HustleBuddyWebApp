@@ -1,0 +1,289 @@
+﻿@model HustleBuddy_Web.ViewModels.SaleViewModel
+
+@{
+    ViewData["Title"] = "Sale";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="modal fade" id="add-view-edit" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="add-view-editLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" style="border: 1px solid mediumpurple;">
+            <!--Content Here-->
+        </div>
+    </div>
+</div>
+
+<div class="card" style="border: 1px solid mediumpurple;">
+
+    <div class="card-header">
+        <div class="row">
+            <div class="col-4">
+                <h4>Sales</h4>
+            </div>
+            <div class="col-5"></div>
+            <div class="col-3">
+                <select id="cashOrCredit" onchange="Filter()" class="form-select text-capitalize" style="border: 1px solid mediumpurple;">
+                    <option value="0">Cash</option>
+                    <option value="1">Credit</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-body">
+
+        <div class="row mb-2">
+            <div class="col-4 btn-group">
+                <a id="all" href="?period=all" class="btn btn-light w-25">All</a>
+                <a id="daily" href="?period=daily" class="btn btn-light w-25">Daily</a>
+                <a id="weekly" href="?period=weekly" class="btn btn-light w-25">Weekly</a>
+                <a id="monthly" href="?period=monthly" class="btn btn-light w-25">Monthly</a>
+            </div>
+            <div class="col-2"></div>
+            <div class="col-6">
+                <div class="row">
+                    <div class="col-6">
+                        <select id="products" onchange="Filter()" class="form-select text-capitalize" asp-items="@(new SelectList(ViewBag.products, "productCode", "productName"))" style="border: 1px solid mediumpurple;"></select>
+                    </div>
+                    <div class="col-6">
+                        <select id="locations" onchange="Filter()" class="form-select text-capitalize" asp-items="@(new SelectList(ViewBag.locations, "location", "location"))" style="border: 1px solid mediumpurple;"></select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @if (Model.creditSales != null)
+        {
+            <table id="credit" class="table table-sm table-hover table-responsive">
+                <thead>
+                    <tr>
+                        <th>Customer</th>
+                        <th>Contact</th>
+                        <th>Product</th>
+                        <th>Quantity</th>
+                        <th>Amount Owed</th>
+                        <th>Due Date</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.creditSales)
+                    {
+                        var products = ViewBag.products as List<Product>;
+                        if (item != null)
+                        {
+                            <tr>
+                                <td class="text-capitalize">@item.customerName</td>
+                                <td>@item.contactNumber</td>
+                                <td class="text-capitalize">@products.Where(p => p.productCode.Equals(Model.sales.Where(s => s.saleId.Equals(item.saleId)).First().productCode)).First().productName</td>
+                                <td>@Model.sales.Where(s => s.saleId.Equals(item.saleId)).First().quantity</td>
+                                <td>R @string.Format("{0:0.00}", item.creditAmount - item.paidAmount)</td>
+                                <td>@item.dueDate.ToString("yyyy-MM-dd")</td>
+                                @if (item.status.ToLower().Equals("paid"))
+                                {
+                                    <td class="text-center">
+                                        <a><i class="far fa-edit text-muted"></i></a>
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td class="text-center">
+                                        <a onclick="GetModel('sale/edit/credit/@item.saleId')" href="#" data-bs-toggle="modal" data-bs-target="#add-view-edit"><i class="far fa-edit text-warning" data-bs-toggle="tooltip" data-bs-placement="bottom" title="edit"></i></a>
+                                    </td>
+                                }
+                            </tr>
+                        }
+                        else
+                        {
+                            <tr>
+                                <td class="text-capitalize">Not Available</td>
+                                <td>Not Available</td>
+                                <td class="text-capitalize">Not Available</td>
+                                <td>Not Available</td>
+                                <td>Not Available</td>
+                                <td>Not Available</td>
+                                <td class="text-center"><a><i class="far fa-edit text-muted"></i></a></td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <table id="cash" class="table table-sm table-hover table-responsive">
+                <thead>
+                    <tr>
+                        <th>
+                            Product
+                        </th>
+                        <th class="text-center">
+                            Quantity
+                        </th>
+                        <th>
+                            Location
+                        </th>
+                        <th>
+                            Time
+                        </th>
+                        <th>
+                            Sub Total
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.sales != null)
+                    {
+                        var products = ViewBag.products as List<Product>;
+                        foreach (var item in Model.sales)
+                        {
+                            <tr>
+                                <td>
+                                    @products.Where(p => p.productCode.Equals(item.productCode)).First().productName
+                                </td>
+                                <td class="text-center">
+                                    @Html.DisplayFor(modelItem => item.quantity)
+                                </td>
+                                <td class="text-capitalize">
+                                    @Html.DisplayFor(modelItem => item.location)
+                                </td>
+                                <td>
+                                    @item.date.ToString("yyyy-MM-dd HH:mm:ss")
+                                </td>
+                                <td>
+                                    R @string.Format("{0:0.00}", item.quantity * products.Where(p => p.productCode.Equals(item.productCode)).First().sellingPrice)
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        }
+
+        <div class="row">
+            <div class="col-sm-4 btn-group">
+                <p>Page <span id="page">0</span> of <span id="page_number">@ViewBag.pageCount</span></p>
+            </div>
+            <div class="col-sm-7"></div>
+            <div class="col-sm-1 btn-group-sm justify-content-end">
+                <button id="btnPrev" type="button" onclick="window.history.back()" class="btn" style="background-color: lightgray" data-bs-toggle="tooltip" data-bs-placement="bottom" title="previous page"> < </button>
+                <button id="btnNext" type="button" onclick="NextPage()" class="btn" style="background-color: lightgray" data-bs-toggle="tooltip" data-bs-placement="bottom" title="next page"> > </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    function UpdateSelect() {
+        var url = new URL(window.location.href);
+        var location_param = url.searchParams.get("location");
+        var product_param = url.searchParams.get("product");
+        var cashOrCredit_param = url.searchParams.get("cashOrCredit");
+
+        var product = document.getElementById("products");
+        var location = document.getElementById("locations");
+        var cashOrCredit = document.getElementById("cashOrCredit");
+
+        if (product_param != null) {
+            product.value = product_param;
+        }
+
+        if (location_param != null) {
+            location.value = location_param;
+        }
+
+        if (cashOrCredit_param != null) {
+            cashOrCredit.value = cashOrCredit_param;
+        }
+    }
+
+    function Filter() {
+        var url = new URL(window.location.href);
+        var product = document.getElementById("products");
+        var location = document.getElementById("locations");
+        var cashOrCredit = document.getElementById("cashOrCredit");
+
+        var url = new URL(window.location.href);
+        var period = url.searchParams.get("period");
+
+        var product_param = "";
+        var location_param = "";
+        var period_param = "";
+        var cashOrCredit_param = "";
+
+        product_param = "product=" + product.options[product.selectedIndex].value;
+        location_param = "location=" + location.options[location.selectedIndex].value;
+        cashOrCredit_param = "cashOrCredit=" + cashOrCredit.options[cashOrCredit.selectedIndex].value;
+        
+        var href = window.location.pathname + "?";
+
+        if (period != null) {
+            period_param = "period=" + period;
+            href += period_param + "&" + product_param + "&" + location_param + "&" + cashOrCredit_param;
+        } else {
+            href += "?" + period_param + "&" + product_param + "&" + location_param + "&" + cashOrCredit_param;
+        }
+
+        window.location.href = href;
+    }
+
+    function NextPage() {
+        var href = window.location.href;
+        var url = new URL(href);
+        var page = url.searchParams.get("page");
+
+        var next_page = 0;
+
+        if (page != null) {
+            next_page = parseInt(page) + 1;
+            href = href.replace("page=" + page, "page=" + next_page);
+        } else {
+            href += "&page=1";
+        }
+
+        window.location.href = href;
+    }
+
+    function MakePages() {
+        var url = new URL(window.location.href);
+        var page = url.searchParams.get("page");
+
+        var txt_page = document.getElementById("page");
+        var txt_page_number = document.getElementById("page_number");
+
+        var page_number = txt_page_number.innerText;
+
+        var next = document.getElementById("btnNext");
+        var prev = document.getElementById("btnPrev");
+
+        if (page == null) {
+            prev.disabled = true;
+            txt_page.innerText = 1;
+            if (page_number == 1) {
+                next.disabled = true;
+            }
+        } else {
+            if (parseInt(page) + 1 == parseInt(page_number)) {
+                next.disabled = true;
+            }
+            txt_page.innerText = parseInt(page) + 1;
+        }
+    }
+
+    MakePages();
+
+    UpdateSelect();
+
+    var url = new URL(window.location.href);
+    var period = url.searchParams.get("period");
+
+    if (period != null) {
+        var elem = document.getElementById(period);
+        elem.style.backgroundColor = "mediumpurple";
+    } else {
+        var elem = document.getElementById("all");
+        elem.style.backgroundColor = "mediumpurple";
+    }
+
+</script>

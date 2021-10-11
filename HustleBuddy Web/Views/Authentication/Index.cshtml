@@ -1,0 +1,317 @@
+﻿@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor httpContextAccessor
+@model HustleBuddy_Web.Models.Vendor
+
+@{
+    ViewData["Title"] = "Authentication";
+    Layout = "~/Views/Shared/_AuthLayout.cshtml";
+}
+
+<form asp-action="Register">
+    <div class="modal fade" id="register" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="registerLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content" style="border: 1px solid mediumpurple;">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="registerLabel">Register</h5>
+                </div>
+                <div class="modal-body">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <input asp-for="vendorId" type="hidden" />
+                    <div class="form-group bg-light mb-1">
+                        <div id="registerAlert" class="alert alert-info alert-dismissible fade show" role="alert" style="padding-bottom: 5px; padding-top: 5px;">
+                            <div id="registerStatus"></div>
+                        </div>
+                    </div>
+                    <div class="form-group mb-2">
+                        <input asp-for="firstName" class="form-control" placeholder="First Name" style="border: 1px solid mediumpurple;" required />
+                        <span asp-validation-for="firstName" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mb-2">
+                        <input asp-for="lastName" class="form-control" placeholder="Last Name" style="border: 1px solid mediumpurple;" required />
+                        <span asp-validation-for="lastName" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mb-2">
+                        <input asp-for="contactNumber" maxlength="10" minlength="10" type="number" class="form-control" placeholder="Contact Number" style="border: 1px solid mediumpurple;" required />
+                        <span asp-validation-for="contactNumber" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mb-2">
+                        <input asp-for="residentialAddress" class="form-control" placeholder="Address" style="border: 1px solid mediumpurple;" required />
+                        <span asp-validation-for="residentialAddress" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mb-2">
+                        <input asp-for="companyName" class="form-control" placeholder="Company Name" style="border: 1px solid mediumpurple;" required />
+                        <span asp-validation-for="companyName" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mb-2">
+                        <input asp-for="email" class="form-control" placeholder="Email Address" style="border: 1px solid mediumpurple;" required />
+                        <span asp-validation-for="email" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mb-2">
+                        <input asp-for="password" type="password" autocomplete="on" class="form-control" placeholder="Password" style="border: 1px solid mediumpurple;" required />
+                        <span asp-validation-for="password" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mb-2">
+                        <input class="form-control" type="password" autocomplete="on" placeholder="Confirm Password" style="border: 1px solid mediumpurple;" required />
+                        <span asp-validation-for="password" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mb-2">
+                        <div class="row">
+                            <div class="col-6">
+                                <button type="button" class="btn btn-secondary w-100" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#login">Back</button>
+                            </div>
+                            <div class="col-6">
+                                <button type="submit" class="btn w-100" style="background-color: mediumpurple">Register</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<div class="modal fade" id="login" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="loginLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content" style="border: 1px solid mediumpurple;">
+            <div class="modal-header">
+                <h5 class="modal-title" id="loginLabel">Login</h5>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group bg-light mb-1">
+                        <div id="loginAlert" class="alert alert-info alert-dismissible fade show" role="alert" style="padding-bottom: 5px; padding-top: 5px;">
+                            <div id="loginStatus"></div>
+                        </div>
+                    </div>
+                    <div class="form-group mb-2">
+                        <input id="loginEmail" type="email" autocomplete="on" class="form-control" placeholder="Email" style="border: 1px solid mediumpurple;" required />
+                    </div>
+                    <div class="form-group mb-2">
+                        <input id="loginPassword" type="password" autocomplete="on" class="form-control" placeholder="Password" style="border: 1px solid mediumpurple;" required />
+                    </div>
+                    <div class="form-group mb-2">
+                        <div class="row">
+                            <div class="col-6">
+                                <button type="button" class="btn btn-secondary w-100" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#register">Register</button>
+                            </div>
+                            <div class="col-6">
+                                <button type="button" onclick="signin()" class="btn w-100" style="background-color: mediumpurple">Login</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group mb-2">
+                        <a href="#" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#forgot" class="text-decoration-none">Forgot Password</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="forgot" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="forgotLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content" style="border: 1px solid mediumpurple;">
+            <div class="modal-header">
+                <h5 class="modal-title" id="forgotLabel">Send Password Reset Code</h5>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group bg-light mb-1">
+                        <div id="forgotAlert" class="alert alert-info alert-dismissible fade show" role="alert" style="padding-bottom: 5px; padding-top: 5px;">
+                            <div id="forgotStatus"></div>
+                        </div>
+                    </div>
+                    <div class="form-group mb-2">
+                        <input id="resetEmail" type="email" class="form-control" placeholder="Email" style="border: 1px solid mediumpurple;" required />
+                    </div>
+                    <div class="form-group mb-2">
+                        <div class="row">
+                            <div class="col-6">
+                                <button type="button" class="btn btn-secondary w-100" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#login">Back</button>
+                            </div>
+                            <div class="col-6">
+                                <button type="button" onclick="sendcode()" class="btn w-100" style="background-color: mediumpurple">Send Code</button><!--data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#reset"-->
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="reset" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="resetLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content" style="border: 1px solid mediumpurple;">
+            <div class="modal-header">
+                <h5 class="modal-title" id="resetLabel">Create New Password</h5>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group bg-light mb-1">
+                        <div id="resetAlert" class="alert alert-info alert-dismissible fade show" role="alert" style="padding-bottom: 5px; padding-top: 5px;">
+                            <div id="resetStatus"></div>
+                        </div>
+                    </div>
+                    <div class="form-group mb-2">
+                        <input id="resetcode" type="number" class="form-control" placeholder="Password Reset Code" style="border: 1px solid mediumpurple;" required />
+                    </div>
+                    <div class="form-group mb-2">
+                        <input id="newpassword" type="password" autocomplete="on" class="form-control" placeholder="New Password" style="border: 1px solid mediumpurple;" required />
+                    </div>
+                    <div class="form-group mb-2">
+                        <input id="confirmpassword" type="password" autocomplete="on" class="form-control" placeholder="Confirm Password" style="border: 1px solid mediumpurple;" required />
+                    </div>
+                    <div class="form-group mb-2">
+                        <div class="row">
+                            <div class="col-6">
+                                <button type="button" class="btn btn-secondary w-100" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#forgot">Back</button>
+                            </div>
+                            <div class="col-6">
+                                <button type="button" onclick="resetpassword()" class="btn w-100" style="background-color: mediumpurple">Reset Password</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group mb-2">
+                        <a href="javascript:void(0)" onclick="sendcode()" class="text-decoration-none">Resent Code</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    var url = new URL(window.location.href);
+    var error = url.searchParams.get("error");
+    var success = url.searchParams.get("success");
+    var registerAlert = document.getElementById("registerAlert");
+    var loginAlert = document.getElementById("loginAlert");
+    var forgotAlert = document.getElementById("forgotAlert");
+    var restAlert = document.getElementById("resetAlert");
+
+
+    registerAlert.style.display = "none";
+    loginAlert.style.display = "none";
+    forgotAlert.style.display = "none";
+    resetAlert.style.display = "none";
+
+    if (error == "login") {
+        loginAlert.style.display = "";
+        loginAlert.classList.remove("alert-info");
+        loginAlert.classList.add("alert-danger");
+        document.getElementById("loginStatus").innerText = "Login Failed. Check Your Credentials!!!"
+
+        $(window).on('load', function () {
+            $('#login').modal('show');
+        });
+    } else if (error == "forgot") {
+        forgotAlert.style.display = "";
+        forgotAlert.classList.remove("alert-info");
+        forgotAlert.classList.add("alert-danger");
+        document.getElementById("forgotStatus").innerHTML = "Email Not Found!!! Click <a href='authentication?error=create' class='text-decoration-none'>Here</a> To Register.";
+
+        $(window).on('load', function () {
+            $('#forgot').modal('show');
+        });
+    } else if (error == "create") {
+        $(window).on('load', function () {
+            $('#register').modal('show');
+        });
+    } else if (error == "register") {
+        registerAlert.style.display = "";
+        registerAlert.classList.remove("alert-info");
+        registerAlert.classList.add("alert-danger");
+        document.getElementById("registerStatus").innerText = "Registration Failed. Passwords Do Not Match!!!"
+
+        $(window).on('load', function () {
+            $('#register').modal('show');
+        });
+    } else if (error == "reset") {
+        resetAlert.style.display = "";
+        resetAlert.classList.remove("alert-info");
+        resetAlert.classList.add("alert-danger");
+        document.getElementById("resetStatus").innerText = "Invalid Passsword Reset Code!!!"
+
+        $(window).on('load', function () {
+            $('#reset').modal('show');
+        });
+    } else if (success == "forgot") {
+        $(window).on('load', function () {
+            $('#reset').modal('show');
+        });
+    } else if (success == "reset") {
+        loginAlert.style.display = "";
+        loginAlert.classList.add("alert-info");
+        loginAlert.classList.remove("alert-danger");
+        document.getElementById("loginStatus").innerText = "Password Reset Successfully...";
+
+        $(window).on('load', function () {
+            $('#login').modal('show');
+        });
+    } else if (success == "register") {
+        loginAlert.style.display = "";
+        loginAlert.classList.add("alert-info");
+        loginAlert.classList.remove("alert-danger");
+        document.getElementById("loginStatus").innerText = "New Account Registered Successfully...";
+
+        $(window).on('load', function () {
+            $('#login').modal('show');
+        });
+    } else {
+        $(window).on('load', function () {
+            $('#login').modal('show');
+        });
+    }
+
+    if (error != null || success != null) {
+        $(".alert").delay(6000).slideUp(1000, function () {
+            $(this).alert('hide');
+        });
+    }
+
+    function reset() {
+        console.log("Entered!!!");
+    }
+
+    function signin() {
+        var url = new URL(window.location.href);
+        var nextPage = url.searchParams.get("location");
+        if (nextPage == "null" || nextPage == null) {
+            nextPage = "";
+        }
+        var href = window.location.pathname + "/login?email=" + document.getElementById("loginEmail").value + "&password=" + document.getElementById("loginPassword").value + "&location=" + nextPage;
+        window.location.href = href;
+    }
+
+    function sendcode() {
+        window.location.href = "authentication/forgot?email=" + document.getElementById('resetEmail').value;
+    }
+
+    function resetpassword() {
+        resetAlert.style.display = "";
+        var resetcode = document.getElementById("resetcode").value;
+        var password = document.getElementById("newpassword").value;
+        var confirmpassword = document.getElementById("confirmpassword").value;
+        if (resetcode.length != 5) {
+            resetAlert.classList.remove("alert-info");
+            resetAlert.classList.add("alert-danger");
+            document.getElementById("resetStatus").innerText = "Reset Code Must Be 5 Digits Long!!!";
+        } else if (password.length < 5) {
+            resetAlert.classList.remove("alert-info");
+            resetAlert.classList.add("alert-danger");
+            document.getElementById("resetStatus").innerText = "Password Cannot Be Less Than 5 Characters!!!";
+        } else if (password != confirmpassword) {
+            resetAlert.classList.remove("alert-info");
+            resetAlert.classList.add("alert-danger");
+            document.getElementById("resetStatus").innerText = "Passwords Do Not Match!!!";
+        } else {
+            window.location.href = "authentication/reset?resetcode=" + resetcode + "&password=" + password;
+        }
+        $(".alert").delay(8000).slideUp(1000, function () {
+            $(this).alert('hide');
+        });
+    }
+
+</script>

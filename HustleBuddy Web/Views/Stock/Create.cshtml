@@ -1,0 +1,128 @@
+﻿@model HustleBuddy_Web.ViewModels.StockAddModel
+
+<script>
+    var count = 0;
+    var table_html = [];
+    var product_json = []
+
+    function AddProduct() {
+        var product = document.getElementById("product");
+        var name = product.options[product.selectedIndex].text;
+        var code = product.options[product.selectedIndex].value;
+        var quantity = document.getElementById("quantity").value;
+
+        table_html[count] = "<tr><td>" + name + "</td><td class='text-center'>" + quantity + "</td><td class='text-center'><i class='far fa-trash text-danger' onclick='RemoveProduct(" + count + ")'></i></td></tr>";
+        product_json[count] = "{\"productCode\":\"" + code + "\",\"stockId\":0,\"quantity\":" + quantity + ",\"sold\":0};";
+        count++;
+        DisplayProducts();
+    }
+
+    function RemoveProduct(position) {
+        table_html[position] = "";
+        product_json[position] = "";
+        DisplayProducts();
+    }
+
+    function DisplayProducts() {
+        var html = "";
+        var json = "";
+        for (i = 0; i < table_html.length; i++) {
+            html += table_html[i];
+            json += product_json[i];
+        }
+        document.getElementById("products").value = json;
+        document.getElementById("product_list").innerHTML = html;
+    }
+
+    function AddNewLocation() {
+
+    }
+</script>
+
+<form asp-action="Add">
+    <div class="modal-header">
+        <h5 class="modal-title" id="add-view-editLabel">New Stock</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+    <div class="modal-body">
+        <div class="row">
+            <div class="alert alert-primary d-flex align-items-center" role="alert">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-exclamation-triangle-fill flex-shrink-0 me-2" viewBox="0 0 16 16" role="img" aria-label="Warning:">
+                    <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
+                </svg>
+                <div>
+                    @{var prods = ViewBag.products as List<Product>;}
+                    Top Selling Location, <span class="text-capitalize">@ViewBag.topLocation</span>. Top Selling Product, <span class="text-capitalize">@prods.Where(p => p.productCode.Equals(ViewBag.topProduct)).First().productName</span>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-6">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input asp-for="product_json" id="products" type="hidden" />
+                <input asp-for="dailyExpense.stockId" type="hidden" />
+                <input asp-for="dailyExpense.expenseId" type="hidden" />
+                <input asp-for="dailyExpense.date" type="hidden" />
+                <input asp-for="dailyStock.stockId" type="hidden" />
+                <input asp-for="dailyStock.vendorId" type="hidden" />
+                <input asp-for="dailyStock.date" type="hidden" />
+                <input asp-for="dailyStock.cost" type="hidden" />
+                <input asp-for="dailyStock.expectedReturn" type="hidden" />
+                <div class="form-group mb-1">
+                    <label class="form-label"><b>Location</b></label>
+                    <select id="locations" onchange="AddNewLocation()" asp-for="dailyStock.location" class="form-select text-capitalize" asp-items="@(new SelectList(ViewBag.locations, "location", "location"))" style="border: 1px solid mediumpurple;" ></select>
+                    <span asp-validation-for="dailyStock.location" class="text-danger"></span>
+                </div>
+                <div class="form-group mb-1">
+                    <label class="form-label"><b>Transport</b></label>
+                    <input asp-for="dailyExpense.transport" class="form-control" placeholder="Transport" type="number" step="any" style="border: 1px solid mediumpurple;" />
+                    <span asp-validation-for="dailyExpense.transport" class="text-danger"></span>
+                </div>
+                <div class="form-group mb-1">
+                    <label class="form-label"><b>Lunch</b></label>
+                    <input asp-for="dailyExpense.lunch" class="form-control" placeholder="Lunch" type="number" step="any" style="border: 1px solid mediumpurple;" />
+                    <span asp-validation-for="dailyExpense.lunch" class="text-danger"></span>
+                </div>
+                <div class="form-group mb-1">
+                    <label class="form-label"><b>Other</b></label>
+                    <input asp-for="dailyExpense.other" class="form-control" placeholder="Other" type="number" step="any" style="border: 1px solid mediumpurple;" />
+                    <span asp-validation-for="dailyExpense.other" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="form-group mb-1">
+                    <label class="form-label"><b>Products</b></label>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <select id="product" class="form-select text-capitalize" asp-items="@(new SelectList(ViewBag.products, "productCode", "productName"))" style="border: 1px solid mediumpurple;"></select>
+                        </div>
+                        <div class="col-sm-4">
+                            <input id="quantity" placeholder="Quantity" class="form-control" type="number" required style="border: 1px solid mediumpurple;" />
+                        </div>
+                        <div class="col-sm-2">
+                            <button type="button" onclick="AddProduct()" class="btn"><i class="far fa-plus text-warning"></i></button>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group mb-1">
+                    <table class="table table-sm table-hover table-responsive">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th class="text-center">Quantity</th>
+                                <th class="text-center">Remove</th>
+                            </tr>
+                        </thead>
+                        <tbody id="product_list">
+                            <!--Products Here-->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary w-25" data-bs-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-success w-25">Create</button>
+    </div>
+</form>

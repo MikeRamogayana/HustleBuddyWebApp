@@ -1,0 +1,112 @@
+﻿@model HustleBuddy_Web.ViewModels.OrderViewModel
+
+<form asp-action="Update">
+    <div class="modal-header">
+        <h5 class="modal-title" id="add-view-editLabel">Update Order</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h6>Customer Details</h6>
+                    </div>
+                    <div class="card-body">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <input asp-for="order.orderId" type="hidden" />
+                        <input asp-for="order.vendorId" type="hidden" />
+                        <input asp-for="order.dateMade" type="hidden" />
+                        <div class="row mb-1">
+                            <div class="col-4">
+                                <label class="form-label fw-bold">Name</label>
+                            </div>
+                            <div class="col-8">
+                                <input asp-for="order.customerName" class="form-control" placeholder="Customer Name" style="border: 1px solid mediumpurple;" />
+                                <span asp-validation-for="order.customerName" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="row mb-1">
+                            <div class="col-4">
+                                <label class="form-label-sm fw-bold">Contact</label>
+                            </div>
+                            <div class="col-8">
+                                <input asp-for="order.contactNumber" type="number" class="form-control" placeholder="Contact Number" style="border: 1px solid mediumpurple;" />
+                                <span asp-validation-for="order.contactNumber" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="row mb-1">
+                            <div class="col-4">
+                                <label class="form-label-sm fw-bold">Address</label>
+                            </div>
+                            <div class="col-8">
+                                <textarea asp-for="order.location" class="form-control" resize="none" rows="3" placeholder="Address" style="border: 1px solid mediumpurple; resize: none;"></textarea>
+                                <span asp-validation-for="order.location" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="row mb-1">
+                            <div class="col-4">
+                                <label class="form-label-sm fw-bold">Expected On</label>
+                            </div>
+                            <div class="col-8">
+                                <input asp-for="order.dateExpected" class="form-control" placeholder="Customer Name" style="border: 1px solid mediumpurple;" />
+                                <span asp-validation-for="order.dateExpected" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="row mb-1">
+                            <div class="col-4">
+                                <label class="form-label fw-bold">Description</label>
+                            </div>
+                            <div class="col-8">
+                                <textarea asp-for="order.description" class="form-control" rows="3" placeholder="Additional Information" style="border: 1px solid mediumpurple; resize: none;"></textarea>
+                                <span asp-validation-for="order.description" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h6>Ordered Products</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <label class="form-label fw-bold">Status</label>
+                            <div class="col-6">
+                                <select asp-for="order.status" class="form-select" style="border: 1px solid mediumpurple;">
+                                    <option value="pending">Pending</option>
+                                    <option value="completed">Completed</option>
+                                    <option value="cancelled">Cancelled</option>
+                                </select>
+                            </div>
+                        </div>
+                        <table class="table table-hover table-responsive">
+                            <thead>
+                                <tr>
+                                    <th>Code</th>
+                                    <th>Name</th>
+                                    <th>Quantity</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (int i = 0; i < Model.products.Count; i++)
+                                {
+                                    <tr>
+                                        <td>@Model.orderedProducts[i].productCode</td>
+                                        <td>@Model.products[i].productName</td>
+                                        <td>@Model.orderedProducts[i].quantity</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary w-25" data-bs-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-success w-25">Update</button>
+    </div>
+</form>

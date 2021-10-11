@@ -1,0 +1,43 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HustleBuddy - @ViewData["Title"]</title>
+    <link rel="icon" type="image/x-icon" href="~/img/icon.png" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @RenderSection("Scripts", required: false)
+</head>
+
+<body>
+    <div class="container">
+        <nav class="navbar navbar-expand-lg fixed-top" style="background-color:rgb(232,232,232); border-bottom:1px solid mediumpurple;">
+            <div class="container-fluid">
+                <a href="/">
+                    <img src="~/img/logo.png" height="50">
+                </a>
+                <div class="collapse navbar-collapse d-flex flex-row-reverse" id="navbarSupportedContent">
+                    <ul class="navbar-nav mr-auto px-5" style="color: black;">
+                        <li id="account" class="nav-item dropdown" runat="server">
+                            <a class="nav-link dropdown-toggle active" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color: black; "><i class="fas fa-user-circle"></i><span style="padding-left:10px;" id="user" runat="server">Account</span></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <div class="col pt-3" style="margin-top:60px;">
+            <main role="main">
+                @RenderBody()
+            </main>
+        </div>
+
+    </div>
+</body>
+
+</html>

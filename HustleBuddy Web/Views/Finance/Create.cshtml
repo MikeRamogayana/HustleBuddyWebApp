@@ -1,0 +1,112 @@
+﻿@model HustleBuddy_Web.ViewModels.BudgetAddModel
+
+    <script>
+        var count = 0;
+        var table_html = [];
+        var product_json = []
+
+        function AddProduct() {
+            var product = document.getElementById("product");
+            var name = product.options[product.selectedIndex].text;
+            var code = product.options[product.selectedIndex].value;
+            var amount = document.getElementById("amount").value;
+
+            table_html[count] = "<tr><td>" + name + "</td><td class='text-center'>" + amount + "</td><td class='text-center'><i class='far fa-trash text-danger' onclick='RemoveProduct(" + count + ")'></i></td></tr>";
+            product_json[count] = "{\"productExpenseBudgetId\":0,\"vendorId\":" + @Model.budget.vendorId + ",\"productCode\" :\"" + code + "\",\"budgetId\":0,\"amount\":" + amount + "};";
+            count++;
+            DisplayProducts();
+        }
+
+        function RemoveProduct(position) {
+            table_html[position] = "";
+            product_json[position] = "";
+            DisplayProducts();
+        }
+
+        function DisplayProducts() {
+            var html = "";
+            var json = "";
+            for (i = 0; i < table_html.length; i++) {
+                html += table_html[i];
+                json += product_json[i];
+            }
+            document.getElementById("products").value = json;
+            document.getElementById("product_list").innerHTML = html;
+        }
+
+        function AddNewLocation() {
+
+        }
+    </script>
+
+<form asp-action="Add">
+    <div class="modal-header">
+        <h5 class="modal-title" id="add-view-editLabel">New Budget</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-6">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input asp-for="productsJson" id="products" type="hidden" />
+                <input asp-for="budget.date" type="hidden" />
+                <input asp-for="budget.year" type="hidden" />
+                <input asp-for="budget.vendorId" type="hidden" />
+                <div class="form-group mb-1">
+                    <label class="form-label"><b>Month</b></label>
+                    <select id="months" asp-for="budget.month" class="form-select" asp-items="@(new SelectList(ViewBag.months, "key", "value"))" style="border: 1px solid mediumpurple;"></select>
+                    <span asp-validation-for="budget.month" class="text-danger"></span>
+                </div>
+                <div class="form-group mb-1">
+                    <label class="form-label"><b>Transport Budget</b></label>
+                    <input asp-for="dailyExpenseBudget.transport" class="form-control" placeholder="Transport" type="number" step="any" style="border: 1px solid mediumpurple;" />
+                    <span asp-validation-for="dailyExpenseBudget.transport" class="text-danger"></span>
+                </div>
+                <div class="form-group mb-1">
+                    <label class="form-label"><b>Lunch Budget</b></label>
+                    <input asp-for="dailyExpenseBudget.lunch" class="form-control" placeholder="Lunch" type="number" step="any" style="border: 1px solid mediumpurple;" />
+                    <span asp-validation-for="dailyExpenseBudget.lunch" class="text-danger"></span>
+                </div>
+                <div class="form-group mb-1">
+                    <label class="form-label"><b>Other</b></label>
+                    <input asp-for="dailyExpenseBudget.other" class="form-control" placeholder="Other" type="number" step="any" style="border: 1px solid mediumpurple;" />
+                    <span asp-validation-for="dailyExpenseBudget.other" class="text-danger"></span>
+                </div>
+                <div class="form-group mb-1">
+                    <label class="form-label"><b>Products</b></label>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <select id="product" class="form-select" asp-items="@(new SelectList(ViewBag.products, "productCode", "productName"))" style="border: 1px solid mediumpurple;"></select>
+                        </div>
+                        <div class="col-sm-4">
+                            <input id="amount" placeholder="Amount" class="form-control" type="number" step="any" required style="border: 1px solid mediumpurple;" />
+                        </div>
+                        <div class="col-sm-2">
+                            <button type="button" onclick="AddProduct()" class="btn"><i class="far fa-plus text-warning"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="form-group mb-1">
+                    <table class="table table-sm table-hover table-responsive">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th class="text-center">Quantity</th>
+                                <th class="text-center">Remove</th>
+                            </tr>
+                        </thead>
+                        <tbody id="product_list">
+                            <!--Products Here-->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary w-25" data-bs-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-success w-25">Create</button>
+    </div>
+</form>

@@ -1,0 +1,105 @@
+﻿@model HustleBuddy_Web.ViewModels.OrderAddModel
+
+<script>
+    var count = 0;
+    var table_html = [];
+    var product_json = []
+
+    function AddProduct() {
+        var product = document.getElementById("product");
+        var name = product.options[product.selectedIndex].text;
+        var code = product.options[product.selectedIndex].value;
+        var quantity = document.getElementById("quantity").value;
+        
+        table_html[count] = "<tr><td>" + name + "</td><td class='text-center'>" + quantity + "</td><td class='text-center'><i class='far fa-trash text-danger' onclick='RemoveProduct(" + count + ")'></i></td></tr>";
+        product_json[count] = "{\"orderId\":0, \"productCode\":\"" + code + "\", \"quantity\":" + quantity + "};";
+        count++;
+        DisplayProducts();
+    }
+
+    function RemoveProduct(position) {
+        table_html[position] = "";
+        product_json[position] = "";
+        DisplayProducts();
+    }
+
+    function DisplayProducts() {
+        var html = "";
+        var json = "";
+        for (i = 0; i < table_html.length; i++) {
+            html += table_html[i];
+            json += product_json[i];
+        }
+        document.getElementById("products").value = "[" + json + "]";
+        document.getElementById("product_list").innerHTML = html;
+    }
+</script>
+
+<form asp-action="Add">
+    <div class="modal-header">
+        <h5 class="modal-title" id="add-view-editLabel">New Order</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-6">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input asp-for="products_json" value="" id="products" hidden />
+                <input asp-for="order.orderId" type="hidden" />
+                <input asp-for="order.vendorId" type="hidden" />
+                <input asp-for="order.dateMade" type="hidden" />
+                <input asp-for="order.status" type="hidden" />
+                <div class="form-group mb-1">
+                    <input asp-for="order.dateExpected" class="form-control" placeholder="Customer Name" style="border: 1px solid mediumpurple;" />
+                    <span asp-validation-for="order.dateExpected" class="text-danger"></span>
+                </div>
+                <div class="form-group mb-1">
+                    <input asp-for="order.customerName" class="form-control" placeholder="Customer Name" style="border: 1px solid mediumpurple;" />
+                    <span asp-validation-for="order.customerName" class="text-danger"></span>
+                </div>
+                <div class="form-group mb-1">
+                    <input asp-for="order.contactNumber" class="form-control" placeholder="Contact Number" type="number" style="border: 1px solid mediumpurple;" />
+                    <span asp-validation-for="order.contactNumber" class="text-danger"></span>
+                </div>
+                <div class="form-group mb-1">
+                    <textarea asp-for="order.location" class="form-control" rows="3" placeholder="Address" style="border: 1px solid mediumpurple; resize: none;"></textarea>
+                    <span asp-validation-for="order.location" class="text-danger"></span>
+                </div>
+                <div class="form-group mb-1">
+                    <textarea asp-for="order.description" class="form-control" rows="3" placeholder="Additional Information" style="border: 1px solid mediumpurple; resize: none;"></textarea>
+                    <span asp-validation-for="order.description" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="row">
+                    <div class="col-6">
+                        <select id="product" class="form-select" asp-items="@(new SelectList(ViewBag.products, "productCode", "productName"))" style="border: 1px solid mediumpurple;"></select>
+                    </div>
+                    <div class="col-4">
+                        <input id="quantity" placeholder="Quantity" class="form-control" type="number" required style="border: 1px solid mediumpurple;" />
+                    </div>
+                    <div class="col-2">
+                        <button type="button" onclick="AddProduct()" class="btn"><i class="far fa-plus text-warning"></i></button>
+                    </div>
+                </div>
+                <div class="form-group mb-1">
+                    <table class="table table-hover table-responsive">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th class="text-center">Quantity</th>
+                                <th class="text-center">Remove</th>
+                            </tr>
+                        </thead>
+                        <tbody id="product_list"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary w-25" data-bs-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-success w-25">Create</button>
+    </div>
+</form>
+
